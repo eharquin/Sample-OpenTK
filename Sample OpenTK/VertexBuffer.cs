@@ -7,6 +7,8 @@ namespace Sample_OpenTK
         bool isDisposed;
         bool isStatic;
 
+        int size;
+
         public readonly int Handle;
 
         public readonly VertexInfo VertexInfo;
@@ -15,15 +17,30 @@ namespace Sample_OpenTK
         public static readonly int MaxVertexCount = 100_000;
 
 
-        public VertexBuffer(VertexInfo vertexInfo, bool isStatic = true)
+        public VertexBuffer(VertexInfo vertexInfo, int size = 1024, bool isStatic = true)
         {
+            if (size < VertexBuffer.MinVertexCount)
+                throw new ArgumentOutOfRangeException(nameof(size));
+
+            if (size > VertexBuffer.MaxVertexCount)
+                throw new ArgumentOutOfRangeException(nameof(size));
+
             VertexInfo = vertexInfo;
             this.isStatic = isStatic;
+            this.size = size;
+
+            BufferUsageHint usageHint = BufferUsageHint.StaticDraw;
+            if (!isStatic)
+                usageHint = BufferUsageHint.DynamicDraw;
 
             Handle = GL.GenBuffer();
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, Handle);
+            GL.BufferData(BufferTarget.ArrayBuffer, size * VertexInfo.Size, IntPtr.Zero, usageHint);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        public void SetData<T>(T[] vertices, int count) where T : struct
+        public void SetData<T>(T[] vertices, int size) where T : struct
         {
             if (typeof(T) != VertexInfo.Type)
                 throw new ArgumentException(nameof(vertices));
@@ -31,19 +48,11 @@ namespace Sample_OpenTK
             if(vertices == null)
                 throw new ArgumentNullException(nameof(vertices));
 
-            if(count < VertexBuffer.MinVertexCount)
-                throw new ArgumentOutOfRangeException(nameof(count));
-
-            if(count > VertexBuffer.MaxVertexCount)
-                throw new ArgumentOutOfRangeException(nameof(count));
-
-
-            BufferUsageHint usageHint = BufferUsageHint.StaticDraw;
-            if (!isStatic)
-                usageHint = BufferUsageHint.DynamicDraw;
+            if(size > this.size || size < MinVertexCount)
+                throw new ArgumentOutOfRangeException(nameof(size));
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, Handle);
-            GL.BufferData(BufferTarget.ArrayBuffer, count * VertexInfo.Size, vertices, usageHint);
+            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, size * VertexInfo.Size, vertices);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 

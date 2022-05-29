@@ -7,35 +7,43 @@ namespace Sample_OpenTK
         bool isDisposed;
         bool isStatic;
 
+        public readonly int Size;
+        
         public readonly int Handle;
 
         public static readonly int MinIndexCount = 3;
         public static readonly int MaxIndexCount = 250_000;
 
-        public IndexBuffer(bool isStatic = true)
+        public IndexBuffer(int size, bool isStatic = true)
         {
             this.isStatic = isStatic;
-
-            Handle = GL.GenBuffer();
-        }
-
-        public void SetData(int[] indices, int count)
-        {
-            if (indices == null)
-                throw new ArgumentNullException(nameof(indices));
-
-            if (count < VertexBuffer.MinVertexCount)
-                throw new ArgumentOutOfRangeException(nameof(count));
-
-            if (count > VertexBuffer.MaxVertexCount)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            this.Size = size;
 
             BufferUsageHint usageHint = BufferUsageHint.StaticDraw;
             if (!isStatic)
                 usageHint = BufferUsageHint.DynamicDraw;
 
+            Handle = GL.GenBuffer();
+
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, Handle);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, count * sizeof(int), indices, usageHint);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, size * sizeof(int), IntPtr.Zero, usageHint);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+        }
+
+        public void SetData(int[] indices, int size)
+        {
+            if (indices == null)
+                throw new ArgumentNullException(nameof(indices));
+
+            if (size < VertexBuffer.MinVertexCount)
+                throw new ArgumentOutOfRangeException(nameof(size));
+
+            if (size > this.Size)
+                throw new ArgumentOutOfRangeException(nameof(size));
+
+
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, Handle);
+            GL.BufferSubData(BufferTarget.ElementArrayBuffer, IntPtr.Zero, size * sizeof(int), indices);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
 

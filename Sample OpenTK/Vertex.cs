@@ -38,7 +38,7 @@ namespace Sample_OpenTK
         public Vector3 Position;
         public Vector4 Color;
 
-        public static VertexInfo VertexInfo = new VertexInfo(typeof(VertexPositionColor), 7 * sizeof(float), new Attribute[] { new Attribute(0, 3, VertexAttribPointerType.Float, false, 0), new Attribute(1, 4, VertexAttribPointerType.Float, false, 3 * sizeof(float)) });
+        public static VertexInfo Info = new VertexInfo(typeof(VertexPositionColor), 7 * sizeof(float), new Attribute[] { new Attribute(0, 3, VertexAttribPointerType.Float, false, 0), new Attribute(1, 4, VertexAttribPointerType.Float, false, 3 * sizeof(float)) });
 
         public VertexPositionColor(Vector3 position, Vector4 color)
         {
@@ -51,15 +51,25 @@ namespace Sample_OpenTK
     {
         public Vector3 Position;
         public Vector4 Color;
-        public Vector2 Texture;
+        public Vector2 TexCoord;
+        public float TexIndex;
 
-        public static VertexInfo VertexInfo = new VertexInfo(typeof(VertexPositionColorTexture), 9 * sizeof(float), new Attribute[] { new Attribute(0, 3, VertexAttribPointerType.Float, false, 0), new Attribute(1, 4, VertexAttribPointerType.Float, false, 3 * sizeof(float)), new Attribute(2, 2, VertexAttribPointerType.Float, false, 7 * sizeof(float)) });
+        public static VertexInfo Info = new VertexInfo(typeof(VertexPositionColorTexture), 10 * sizeof(float), new Attribute[] { new Attribute(0, 3, VertexAttribPointerType.Float, false, 0), new Attribute(1, 4, VertexAttribPointerType.Float, false, 3 * sizeof(float)), new Attribute(2, 2, VertexAttribPointerType.Float, false, 7 * sizeof(float)), new Attribute(3, 1, VertexAttribPointerType.Float, false, 9 * sizeof(float)) });
 
-        public VertexPositionColorTexture(Vector3 position, Vector4 color, Vector2 texture)
+        public VertexPositionColorTexture(Vector3 position, Color4 color, Vector2 textCoord, float texIndex)
         {
             Position = position;
-            Color = color;
-            Texture = texture;
+            Color = new Vector4(color.R, color.G, color.B, color.A); ;
+            TexCoord = textCoord;
+            TexIndex = texIndex;
+        }
+
+        public VertexPositionColorTexture(Vector3 position, Color4 color, Vector2 textCoord)
+        {
+            Position = position;
+            Color = new Vector4(color.R, color.G, color.B, color.A);
+            TexCoord = textCoord;
+            TexIndex = 0;
         }
     }
 
@@ -67,7 +77,7 @@ namespace Sample_OpenTK
     {
         public Vector3 Position;
 
-        public static VertexInfo VertexInfo = new VertexInfo(typeof(VertexPosition), 3 * sizeof(float), new Attribute[] { new Attribute(0, 3, VertexAttribPointerType.Float, false, 0)});
+        public static VertexInfo Info = new VertexInfo(typeof(VertexPosition), 3 * sizeof(float), new Attribute[] { new Attribute(0, 3, VertexAttribPointerType.Float, false, 0)});
 
         public VertexPosition(Vector3 position)
         {
@@ -81,7 +91,7 @@ namespace Sample_OpenTK
 
         public Vector2 Texture;
 
-        public static VertexInfo VertexInfo = new VertexInfo(typeof(VertexPositionTexture), 3 * sizeof(float), new Attribute[] { new Attribute(0, 3, VertexAttribPointerType.Float, false, 0), new Attribute(1, 2, VertexAttribPointerType.Float, false, 3 * sizeof(float)) });
+        public static VertexInfo Info = new VertexInfo(typeof(VertexPositionTexture), 3 * sizeof(float), new Attribute[] { new Attribute(0, 3, VertexAttribPointerType.Float, false, 0), new Attribute(1, 2, VertexAttribPointerType.Float, false, 3 * sizeof(float)) });
 
         public VertexPositionTexture(Vector3 position, Vector2 texture)
         {
